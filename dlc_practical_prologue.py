@@ -33,16 +33,12 @@ parser.add_argument('--data_dir',
                     type = str, default = None,
                     help = 'Where are the PyTorch data located (default $PYTORCH_DATA_DIR or \'./data\')')
 
-# Timur's fix
-parser.add_argument('-f', '--file', help='quick hack for jupyter')
+def init(args):
+    if args.seed >= 0:
+        torch.manual_seed(args.seed)
 
-args = parser.parse_args()
-
-if args.seed >= 0:
-    torch.manual_seed(args.seed)
-
-if torch.cuda.is_available() and not args.force_cpu:
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')
+    if torch.cuda.is_available() and not args.force_cpu:
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 ######################################################################
 # The data
@@ -53,7 +49,7 @@ def convert_to_one_hot_labels(input, target):
         tmp[k, target[k]] = 1
     return tmp
 
-def load_data(cifar = None, one_hot_labels = False, normalize = False, flatten = True):
+def load_data(args, cifar = None, one_hot_labels = False, normalize = False, flatten = True):
 
     if args.data_dir is not None:
         data_dir = args.data_dir
